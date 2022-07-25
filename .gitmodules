@@ -1,0 +1,4 @@
+[submodule "Yggdrasil"]
+	path = Yggdrasil
+	url = https://github.com/TotallyWholesomeVRC/Yggdrasil.git
+	branch = master
