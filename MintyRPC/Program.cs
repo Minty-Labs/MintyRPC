@@ -29,6 +29,7 @@ public class Program {
     private static IntPtr _handle;
 
     private static bool _isRunning, _firstStart, _initStart;
+    private static bool _isDiscordAppRunning(IEnumerable<Process> processes) => processes.Any(p => p.ProcessName is "Discord" or "DiscordPTB" or "DiscordCanary");
     private static Discord.Discord? _discord;
     private static Thread _loopThread = new (CallBack);
     private static long _time;
@@ -199,44 +200,60 @@ public class Program {
         Log.Info($"{(callFromRestart ? "Res" : "S")}tarting Discord Rich Presence, please wait...");
 
         if (!callFromRestart) {
-            var processes = Process.GetProcesses();
-            var isDiscordAppRunning = processes.Any(p => p.ProcessName is "Discord" or "DiscordPTB" or "DiscordCanary");
-        
-            if (!isDiscordAppRunning) {
-                Log.Warning("Discord is not running.");
-                // Process.GetCurrentProcess().Kill();
-                return;
-            }
-        }
-        
-        Console.Title = $"{BuildInfo.Name} v{BuildInfo.Version} - Starting, please wait...";
-        _startTime = DateTime.Now;
-        _time = GetTimeAsLong(ConfigSetup.GetPresenceInfo().StartTimestamp);
+            Task.Run(() => {
+                var processes = Process.GetProcesses();
+                var isDiscordAppRunning = _isDiscordAppRunning(processes);
+                
+                if (!isDiscordAppRunning) {
+                    Task.Delay(2000);
+                    if (!isDiscordAppRunning) {
+                        Task.Delay(2000);
+                        if (!isDiscordAppRunning) {
+                            Task.Delay(2000);
+                            if (!isDiscordAppRunning) {
+                                Task.Delay(2000);
+                                if (!isDiscordAppRunning) {
+                                    Task.Delay(2000);
+                                }
+                                else {
+                                    Log.Info("Waited 10 seconds. Failed to start Discord Rich Presence, Discord is not running.");
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                Console.Title = $"{BuildInfo.Name} v{BuildInfo.Version} - Starting, please wait...";
+                _startTime = DateTime.Now;
+                _time = GetTimeAsLong(ConfigSetup.GetPresenceInfo().StartTimestamp);
 
-        var tempLobbyId = "";
-        if (string.IsNullOrWhiteSpace(ConfigSetup.GetPresenceInfo().LobbyId)) {
-            tempLobbyId = GenerateRandomString(69);
-            ConfigSetup.GetPresenceInfo().LobbyId = tempLobbyId;
-            ConfigSetup.Save();
+                var tempLobbyId = "";
+                if (string.IsNullOrWhiteSpace(ConfigSetup.GetPresenceInfo().LobbyId)) {
+                    tempLobbyId = GenerateRandomString(69);
+                    ConfigSetup.GetPresenceInfo().LobbyId = tempLobbyId;
+                    ConfigSetup.Save();
+                }
+                _randomLobbyId = tempLobbyId;
+        
+                var clientId = Environment.GetEnvironmentVariable("702767245385924659") ?? "702767245385924659";
+                _discord = new Discord.Discord(Int64.Parse(clientId), (UInt64)Discord.CreateFlags.Default);
+        
+                _discord.SetLogHook(Discord.LogLevel.Debug, (level, message) => {
+                    Log.Status($"Rich Presence has {(callFromRestart ? "re" : "")}started with code: {message}");
+                });
+        
+                _applicationManager = _discord.GetApplicationManager();
+        
+                UpdateActivity(true);
+        
+                if (!callFromRestart)
+                    _loopThread.Start();
+                _isRunning = true;
+                if (ConfigSetup.GetGeneralInfo().RunInBackground)
+                    ShowWindow(_handle, AppWindowHide);
+            });
         }
-        _randomLobbyId = tempLobbyId;
-        
-        var clientId = Environment.GetEnvironmentVariable("702767245385924659") ?? "702767245385924659";
-        _discord = new Discord.Discord(Int64.Parse(clientId), (UInt64)Discord.CreateFlags.Default);
-        
-        _discord.SetLogHook(Discord.LogLevel.Debug, (level, message) => {
-            Log.Status($"Rich Presence has {(callFromRestart ? "re" : "")}started with code: {message}");
-        });
-        
-        _applicationManager = _discord.GetApplicationManager();
-        
-        UpdateActivity();
-        
-        if (!callFromRestart)
-            _loopThread.Start();
-        _isRunning = true;
-        if (ConfigSetup.GetGeneralInfo().RunInBackground)
-            ShowWindow(_handle, AppWindowHide);
     }
 
     private static long GetTimeAsLong(long time) 
@@ -434,7 +451,7 @@ public class Program {
     //     StartDiscord("start", new Arguments());
     // }
 
-    private static void UpdateActivity() {
+    private static void UpdateActivity(bool callFromRestart = false) {
         
         _activityManager = _discord?.GetActivityManager();
         var lobbyManager = _discord?.GetLobbyManager();
@@ -486,6 +503,9 @@ public class Program {
         }
             
         _activityManager?.UpdateActivity(_activity, result => {
+            if (callFromRestart)
+                Log.Info("Restarted activity and Discord Rich Presence.");
+            
             Log.Info("Activity updated: {0}", result);
             
             if (_firstStart) return;
