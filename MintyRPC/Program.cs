@@ -5,12 +5,13 @@ using System.Text;
 using Activity = Discord.Activity;
 using Yggdrasil.Logging;
 using Yggdrasil.Util.Commands;
+using System.Collections.Generic;
 
 namespace MintyRPC;
 
 public static class BuildInfo {
     public const string Name = "MintyRPC";
-    public const string Version = "0.0.14";
+    public const string Version = "0.0.16";
     public const string Author = "Lily";
     public const string Company = "Minty Labs";
     public static bool IsWindows => Environment.OSVersion.ToString().ToLower().Contains("windows");
@@ -26,7 +27,7 @@ public class Program {
     private const int AppWindowHide = 0;
     private const int AppWindowShow = 5;
     private static IntPtr _handle;
-    
+
     private static bool _isRunning, _firstStart, _initStart;
     private static Discord.Discord? _discord;
     private static Thread _loopThread = new (CallBack);
@@ -49,6 +50,23 @@ public class Program {
         Console.Title = $"{BuildInfo.Name} v{BuildInfo.Version} - Not Running";
         Utils.WriteDiscordGameSdkDll();
         ConfigSetup.Setup();
+
+        if (ConfigSetup.GetPresenceInfo().PresenceId == 0) {
+            Console.Write("The Presence ID is not set, would you link to set one up? (y/n)");
+            var answer = Console.ReadLine();
+            if (answer!.ToLower() == "y" || answer.ToLower().Contains("yes")) {
+                Console.Write("Please enter the Presence ID: ");
+                var id = Console.ReadLine();
+                try {
+                    ulong.TryParse(id, out var finalId);
+                    ConfigSetup.GetPresenceInfo().PresenceId = finalId;
+                }
+                catch {
+                    Log.Error("Failed to parse input as a number");
+                    Log.Error("The presence ID is not set, please set it up manually");
+                }
+            }
+        }
 
         ConfigSetup.staticDetails = ConfigSetup.GetPresenceInfo().Details;
         ConfigSetup.staticState = ConfigSetup.GetPresenceInfo().State;
@@ -131,6 +149,11 @@ public class Program {
 
     private static CommandResult StartDiscord(string command, Arguments args) {
         if (_isRunning) return CommandResult.Break;
+        if (ConfigSetup.GetPresenceInfo().PresenceId == 0) {
+            Log.Error("Will not start the Discord Rich Presence. The Presence ID is not set, please set it up manually.");
+            return CommandResult.Break;
+        }
+        
         Log.Info("Starting Discord Rich Presence, please wait...");
         
         var processes = Process.GetProcesses();
