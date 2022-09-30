@@ -20,15 +20,15 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Yggdrasil\Yggdrasil\Yggdrasil.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <EmbeddedResource Include="Libs\discord_game_sdk.dll" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.2-beta2" />
     </ItemGroup>
 
 </Project>

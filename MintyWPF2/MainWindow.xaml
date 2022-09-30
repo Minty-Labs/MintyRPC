@@ -1,0 +1,159 @@
+﻿<Window x:Class="MintyWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        xmlns:local="clr-namespace:MintyWPF" mc:Ignorable="d"
+        Title="MintyRPC" Height="600" Width="1000" MaxWidth="1000" MaxHeight="650"
+        ui:WindowHelper.UseModernWindowStyle="True">
+
+    <Window.TaskbarItemInfo>
+        <TaskbarItemInfo x:Name="TaskbarItemInfo"
+                         Description="MintyRPC: Custom Discord Rich Presence">
+        </TaskbarItemInfo>
+    </Window.TaskbarItemInfo>
+
+    <ui:SimpleStackPanel Margin="12" Spacing="24">
+        <UniformGrid Margin="0,0,0,-35">
+            <UniformGrid Margin="0,0,-100,0">
+                <TextBlock Text="Custom Discord Rich Presence" Style="{StaticResource HeaderTextBlockStyle}" />
+            </UniformGrid>
+            <UniformGrid Margin="120 0 0 0">
+                <UniformGrid>
+                    <Label Content="GitHub ↗️" Margin="50 6 0 0" MouseUp="GitHubLink" />
+                    <Label Content="Version: v2.0.0 Beta Build" Margin="0,6,0,0" />
+                    <Label Content="Creator ↗️" Margin="50 6 0 0" MouseUp="CreatorLink" />
+                    <Label Content="Update Available ↗️" Foreground="Red" Margin="0,6,0,0"
+                           Visibility="Hidden" Name="UpdateLabel" MouseUp="UpdateLink" Initialized="UpdateLabel_OnInitialized" />
+                </UniformGrid>
+            </UniformGrid>
+            <UniformGrid  Margin="0,0,275,0">
+                <Button Content="Start" Name="StartPresenceButton" Click="StartPresenceButton_OnClick" />
+                <UniformGrid Margin="0,0,-170,-32">
+                    <Button Content="Stop" Name="StopPresenceButton" Click="StopPresenceButton_OnClick" Style="{StaticResource AccentButtonStyle}" />
+                    <Button Content="Send To Background" Name="SendToBackground" Click="SendToBackground_OnClick" Margin="-9,0,0,0" Width="147" />
+                </UniformGrid>
+            </UniformGrid>
+        </UniformGrid>
+
+        <UniformGrid Margin="10,0,335,0">
+
+            <UniformGrid Margin="0,0,0,-90">
+                <Label>Client ID</Label>
+                <UniformGrid Margin="22,0,0,0">
+                    <TextBox Initialized="ClientID_Init" Name="ClientIDBox" Margin="-246,0,150,0" />
+                    <Label Content="Changing the Client ID will require a full restart to take effect." FontSize="8"
+                           Margin="-137,12,0,0" Name="ClientIDExtraText" Visibility="Hidden" />
+                </UniformGrid>
+            </UniformGrid>
+
+        </UniformGrid>
+
+        <UniformGrid Margin="10,0,0,0">
+
+            <UniformGrid Margin="0 0 0 -30">
+                <Label>Details</Label>
+                <TextBox
+                    Initialized="Details_Init" Name="DetailsBox" 
+                    Margin="-150 0 150 0"/>
+            </UniformGrid>
+
+            <UniformGrid Margin="0 0 0 -30">
+                <Label Margin="0,0,150,0">Timestamp</Label>
+                <UniformGrid Margin="0,0,0,-32">
+                    <ComboBox Width="134" Margin="-150,0,0,0" Name="TimeStampComboBox" VerticalAlignment="Center"
+                              SelectionChanged="TimeStampComboBox_OnSelectionChanged" Initialized="TimeStampComboBox_OnInitialized">
+                        <ComboBoxItem Name="NoTimestampItem" IsSelected="True">None</ComboBoxItem>
+                        <ComboBoxItem Name="CustomTimstampItem">Custom</ComboBoxItem>
+                        <ComboBoxItem Name="ElapsedTimestampItem">Elapsed Time</ComboBoxItem>
+                        <ComboBoxItem Name="LocalTimestampItem">Local Time</ComboBoxItem>
+                    </ComboBox>
+                    <TextBox Margin="-130,0,150,0" Name="TimpstampCustomBox" IsEnabled="False" Initialized="TimpstampCustomBox_OnInitialized" />
+                </UniformGrid>
+            </UniformGrid>
+
+        </UniformGrid>
+
+        <UniformGrid Margin="10,-30,0,0">
+            <UniformGrid Margin="0 0 0 -30">
+                <Label>State</Label>
+                <TextBox Initialized="State_Init" Name="StateBox"
+                         Margin="-150 0 150 0"/>
+            </UniformGrid>
+
+            <UniformGrid Margin="0 0 0 -30">
+                <Label>Lobby ID</Label>
+                <TextBox Initialized="LobbyID_Init" Name="LobbyIDBox"
+                         Margin="-150 0 150 0" IsEnabled="False"/>
+            </UniformGrid>
+        </UniformGrid>
+
+        <UniformGrid Margin="10,-30,0,0">
+
+            <UniformGrid Margin="0 0 0 -30">
+                <Label>Large Image Key</Label>
+                <!--<ComboBox Initialized="LargeImageKey_Init" Width="150" Margin="-60 0 0 0" Name="LargeImgComboBox" >
+                    <ComboBoxItem>None</ComboBoxItem>
+                </ComboBox>-->
+                <TextBox Initialized="LargeImageKey_Init" Margin="-110,0,150,0" Name="LargeImgBox" />
+            </UniformGrid>
+
+            <UniformGrid Margin="0 0 0 -30">
+                <Label>Tooltip</Label>
+                <TextBox Initialized="LargeImageTooltip_Init" Name="LargeImageToolipBox"
+                         Margin="-150 0 150 0"/>
+            </UniformGrid>
+
+        </UniformGrid>
+
+        <UniformGrid Margin="10,-30,0,0">
+
+            <UniformGrid Margin="0 0 0 -30">
+                <Label>Small Image Key</Label>
+                <!--<ComboBox Initialized="SmallImageKey_Init" Width="150" Margin="-60 0 0 0" Name="SmallImgComboBox">
+                    <ComboBoxItem>None</ComboBoxItem>
+                </ComboBox>-->
+                <TextBox Initialized="SmallImageKey_Init" Margin="-110,0,150,0" Name="SmallImgBox" />
+            </UniformGrid>
+
+            <UniformGrid Margin="0 0 0 -30">
+                <Label>Tooltip</Label>
+                <TextBox Initialized="SmallImageTooltip_Init" Name="SmallImageToolipBox"
+                         Margin="-150 0 150 0"/>
+            </UniformGrid>
+
+        </UniformGrid>
+
+        <UniformGrid Margin="10,-30,135,0">
+            <UniformGrid Margin="0 0 0 00">
+                <Label>Party Size</Label>
+                <UniformGrid Margin="-60 0 0 0" Name="PartyNumbers" >
+                    <TextBox MaxWidth="25"
+                             Initialized="CurrentPartyLabel"
+                             DataContextChanged="DoNotAcceptStrings" Name="CurrentPartyCount"/>
+                    <Label Uid="currentparty" Content="(current)" Margin="-30 0 0 0" />
+                    <TextBox MaxWidth="25"
+                             Initialized="MaxPartyLabel"
+                             DataContextChanged="DoNotAcceptStrings" Name="MaxPartyCount"/>
+                    <Label Uid="maxparty" Content="(max)" Margin="-30 0 0 0"/>
+                </UniformGrid>
+
+                <UniformGrid>
+                    <Label>Display Party</Label>
+                    <ui:ToggleSwitch DataContextChanged="OnPartyToggle" Initialized="PartyToggle_Init" Name="PartySwitch" />
+                </UniformGrid>
+            </UniformGrid>
+
+
+            <UniformGrid>
+                <Button Content="Save and Apply" Style="{StaticResource AccentButtonStyle}"
+                        Margin="300 0 0 100"
+                        Name="SaveAndApply"
+                        Click="SaveAndApply_OnClick"/>
+            </UniformGrid>
+        </UniformGrid>
+
+    </ui:SimpleStackPanel>
+
+</Window>

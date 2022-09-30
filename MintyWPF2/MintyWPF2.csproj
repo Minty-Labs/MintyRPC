@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>True</UseWindowsForms>
+    <AssemblyName>MintyRPC</AssemblyName>
+    <RootNamespace>MintyWPF</RootNamespace>
+    <ApplicationIcon>MintyRPCLogo.ico</ApplicationIcon>
+    <Authors>MintLily</Authors>
+    <Company>Minty Labs</Company>
+    <AssemblyVersion>2.0.0.274</AssemblyVersion>
+    <FileVersion>2.0.0.274</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Libs\discord_game_sdk.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="MintyRPCLogo.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Libs\discord_game_sdk.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ModernWpfUI" Version="0.9.6" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2-beta2" />
+  </ItemGroup>
+
+</Project>
