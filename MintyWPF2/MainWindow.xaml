@@ -6,7 +6,8 @@
         xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:local="clr-namespace:MintyWPF" mc:Ignorable="d"
         Title="MintyRPC" Height="600" Width="1000" MaxWidth="1000" MaxHeight="650"
-        ui:WindowHelper.UseModernWindowStyle="True">
+        ui:WindowHelper.UseModernWindowStyle="True"
+        Visibility="Visible">
 
     <Window.TaskbarItemInfo>
         <TaskbarItemInfo x:Name="TaskbarItemInfo"
@@ -22,7 +23,7 @@
             <UniformGrid Margin="120 0 0 0">
                 <UniformGrid>
                     <Label Content="GitHub ↗️" Margin="50 6 0 0" MouseUp="GitHubLink" />
-                    <Label Content="Version: v2.0.0 Beta Build" Margin="0,6,0,0" />
+                    <Label Content="Version: v2.0.0" Margin="0,6,0,0" />
                     <Label Content="Creator ↗️" Margin="50 6 0 0" MouseUp="CreatorLink" />
                     <Label Content="Update Available ↗️" Foreground="Red" Margin="0,6,0,0"
                            Visibility="Hidden" Name="UpdateLabel" MouseUp="UpdateLink" Initialized="UpdateLabel_OnInitialized" />
@@ -44,7 +45,8 @@
                 <UniformGrid Margin="22,0,0,0">
                     <TextBox Initialized="ClientID_Init" Name="ClientIDBox" Margin="-246,0,150,0" />
                     <Label Content="Changing the Client ID will require a full restart to take effect." FontSize="8"
-                           Margin="-137,12,0,0" Name="ClientIDExtraText" Visibility="Hidden" />
+                           Margin="-137,12,0,0" Name="ClientIDExtraText" Visibility="Hidden"
+                           DataContextChanged="DoNotAcceptStrings"/>
                 </UniformGrid>
             </UniformGrid>
 

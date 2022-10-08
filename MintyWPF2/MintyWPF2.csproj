@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows8.0</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>True</UseWindowsForms>
@@ -11,8 +10,8 @@
     <ApplicationIcon>MintyRPCLogo.ico</ApplicationIcon>
     <Authors>MintLily</Authors>
     <Company>Minty Labs</Company>
-    <AssemblyVersion>2.0.0.274</AssemblyVersion>
-    <FileVersion>2.0.0.274</FileVersion>
+    <AssemblyVersion>2.0.0.361</AssemblyVersion>
+    <FileVersion>2.0.0.361</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

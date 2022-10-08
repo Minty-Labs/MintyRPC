@@ -27,6 +27,8 @@ namespace MintyWPF.Functions {
             stream.Close();
 
             File.WriteAllBytes(SdkFilePath, file);
+
+            DiscordActivityManager.initStart = true;
         }
 
         public static bool IsUpdateAvailable;

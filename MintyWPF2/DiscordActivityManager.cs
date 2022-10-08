@@ -23,15 +23,17 @@ public class DiscordActivityManager {
     public static ActivityManager? _activityManager;
     private static ApplicationManager? _applicationManager;
     private static string? _randomLobbyId;
+    public static string clientId;
 
-    public static void StartPresence() {
+    /*public static void StartPresence() {
         if (isRunning) return;
-        if (ConfigSetup.GetPresenceInfo().PresenceId == 0) return;
+        var pId = ConfigSetup.GetPresenceInfo().PresenceId;
+        if (pId == "0" || !string.IsNullOrWhiteSpace(pId)) return;
 
         var processes = Process.GetProcesses();
-        var isDiscordAppRunning = processes.Any(p => p.ProcessName is "Discord" or "DiscordPTB" or "DiscordCanary");
+        var isDiscordAppRunning = _isDiscordAppRunning(processes);
 
-        if (!isDiscordAppRunning) return;
+        if (!isDiscordAppRunning) throw new Exception();
         startTime = DateTime.Now;
         _time = Functions.Utils.UpdateTimeSelection();
 
@@ -43,8 +45,9 @@ public class DiscordActivityManager {
         }
         _randomLobbyId = tempLobbyId;
 
-        var clientId = Environment.GetEnvironmentVariable("702767245385924659") ?? "702767245385924659";
-        DiscordManager = new Discord.Discord(Int64.Parse(clientId), (UInt64)Discord.CreateFlags.Default);
+        //var clientId = Environment.GetEnvironmentVariable() ?? "702767245385924659";
+        var _clientId = ConfigSetup.GetPresenceInfo().PresenceId ?? "702767245385924659";
+        DiscordManager = new Discord.Discord(Int64.Parse(clientId??_clientId), (UInt64)Discord.CreateFlags.Default);
 
         DiscordManager.SetLogHook(Discord.LogLevel.Debug, (level, message) => {
             // Log.Status($"Rich Presence has started with code: {message}");
@@ -54,21 +57,18 @@ public class DiscordActivityManager {
 
         UpdateActivity();
 
-        if (!firstStart)
+        //if (!firstStart)
             _loopThread.Start();
-
-        initStart = true;
-        if (!isRunning && initStart)
-            if (ConfigSetup.GetGeneralInfo().AutoRestart)
-                BasicStartDiscord(true);
-        firstStart = true;
         isRunning = true;
-    }
+    }*/
 
     public static void BasicStartDiscord(bool callFromRestart = false) {
         if (isRunning)
             return;
-        //Log.Info($"{(callFromRestart ? "Res" : "S")}tarting Discord Rich Presence, please wait...");
+
+        var pId = ConfigSetup.GetPresenceInfo().PresenceId;
+        if (pId == 0)
+            return;
 
         if (!callFromRestart) {
             Task.Run(() => {
@@ -87,7 +87,8 @@ public class DiscordActivityManager {
                                     Task.Delay(2000);
                                 } else {
                                     //Log.Info("Waited 10 seconds. Failed to start Discord Rich Presence, Discord is not running.");
-                                    return;
+                                    //return;
+                                    throw new Exception();
                                 }
                             }
                         }
@@ -105,18 +106,17 @@ public class DiscordActivityManager {
                 }
                 _randomLobbyId = tempLobbyId;
 
-                var clientId = Environment.GetEnvironmentVariable("702767245385924659") ?? "702767245385924659";
-                DiscordManager = new Discord.Discord(Int64.Parse(clientId), (UInt64)Discord.CreateFlags.Default);
+                DiscordManager = new Discord.Discord(Int64.Parse(clientId ?? "702767245385924659"), (UInt64)Discord.CreateFlags.Default);
 
                 DiscordManager.SetLogHook(Discord.LogLevel.Debug, (level, message) => {
-                    //Log.Status($"Rich Presence has {(callFromRestart ? "re" : "")}started with code: {message}");
+                    // Elly is cute
                 });
 
                 _applicationManager = DiscordManager.GetApplicationManager();
 
                 UpdateActivity(callFromRestart);
 
-                if (!callFromRestart)
+                if (!callFromRestart && !firstStart)
                     _loopThread.Start();
                 isRunning = true;
             });

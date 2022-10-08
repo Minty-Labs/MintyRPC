@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,6 +14,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -21,6 +24,9 @@ using System.Windows.Shell;
 using MintyRPC;
 using MintyWPF.Functions;
 using ModernWpf.Controls;
+using ComboBox = System.Windows.Controls.ComboBox;
+using Path = System.IO.Path;
+using TextBox = System.Windows.Controls.TextBox;
 
 namespace MintyWPF {
     /// <summary>
@@ -56,9 +62,11 @@ namespace MintyWPF {
             InitializeComponent();
 
             LobbyIDBox.ToolTip = ConfigSetup.GetPresenceInfo().LobbyId;
+            
+            DiscordActivityManager.clientId = ConfigSetup.GetPresenceInfo().PresenceId.ToString();
 
             if (ConfigSetup.GetGeneralInfo().AutoStart)
-                DiscordActivityManager.StartPresence();
+                DiscordActivityManager.BasicStartDiscord();
         }
 
         private void UpdateLabel_OnInitialized(object? sender, EventArgs e) {
@@ -197,8 +205,7 @@ namespace MintyWPF {
 
 
         private void SaveAndApply_OnClick(object sender, RoutedEventArgs e) {
-            // TODO: Get all values from text boxes, save to JSON, and restart RPC Activity
-            ConfigSetup.GetPresenceInfo().PresenceId = ulong.Parse(ClientIDBox.Text);
+            ConfigSetup.GetPresenceInfo().PresenceId = long.Parse(ClientIDBox.Text);
             ConfigSetup.GetPresenceInfo().Details = DetailsBox.Text;
             ConfigSetup.GetPresenceInfo().State = StateBox.Text;
             ConfigSetup.GetPresenceInfo().LargeImageKey = LargeImgBox.Text;
@@ -218,7 +225,7 @@ namespace MintyWPF {
 
         private void StartPresenceButton_OnClick(object sender, RoutedEventArgs e) {
             ClientIDExtraText.Visibility = Visibility.Visible;
-            DiscordActivityManager.StartPresence();
+            try { DiscordActivityManager.BasicStartDiscord(); } catch{ throw new Exception(); }
         }
 
         private void StopPresenceButton_OnClick(object sender, RoutedEventArgs e) {
@@ -226,23 +233,18 @@ namespace MintyWPF {
         }
 
         private void SendToBackground_OnClick(object sender, RoutedEventArgs e) {
-            /*using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(Assembly.GetCallingAssembly()
-                .GetManifestResourceNames().First(x => x.EndsWith(".ico")));
-            var file = new byte[stream!.Length];
-            stream.Read(file, 0, (int)stream.Length);
-            stream.Close();*/
-
-            var iconUri = new Uri("pack://application:,,,/MintyRPCLogo.ico", UriKind.RelativeOrAbsolute);
-
-            nIcon.Icon = new Icon(iconUri.AbsolutePath);
+            var i = System.Drawing.Icon.ExtractAssociatedIcon(
+                $"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}MintyRPC.exe");
+            
+            nIcon.Icon = i;
             nIcon.Visible = true;
             nIcon.Text = "Click to open window.";
-            WindowState = WindowState.Minimized;
+            Visibility = Visibility.Hidden;
             nIcon.Click += NIconOnClick;
         }
 
         private void NIconOnClick(object? sender, EventArgs e) {
-            WindowState = WindowState.Normal;
+            Visibility = Visibility.Visible;
             nIcon.Visible = false;
         }
     }

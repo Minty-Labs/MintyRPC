@@ -24,7 +24,7 @@ public class General {
 
 public class PresenceInfo {
     [JsonProperty("PresenceID")]
-    public ulong PresenceId { get; set; }
+    public long PresenceId { get; set; }
     [JsonProperty("Details")]
     public string? Details { get; set; }
     [JsonProperty("State")]
@@ -65,7 +65,7 @@ public static class ConfigSetup {
         };
         
         var info = new PresenceInfo {
-            PresenceId = 702767245385924659,
+            PresenceId = 999999999999999999,
             Details = "Being cute",
             State = "And adorable",
             LargeImageKey = "mint",
